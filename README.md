@@ -45,7 +45,7 @@ from easytest import Expect
 # The below passes if object is a *subset* of expected. Useful
 # for testing if data is unknown or unimportant. So these pass:
 Expect(["A","B",{}]).iterContains([str,str,dict])
-Expect([{"a":["B","C"]}]).dictContains([{"a":[str,str,int,list,dict]}])
+Expect({"a":["B","C"]}).dictContains({"a":[str,str,int,list,dict]})
 ```
 
-For more documentation, see [Easytest.py](https://gits-15.sys.kth.se/grudat19/axelen-ovn7/blob/master/Easytest.py).
+There are an abundancy of available methods, for more documentation, see [Easytest.py](https://gits-15.sys.kth.se/grudat19/axelen-ovn7/blob/master/Easytest.py).
