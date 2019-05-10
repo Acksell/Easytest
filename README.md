@@ -13,11 +13,6 @@ from easytest import TestSuite
 class TreapTest(TestSuite):
     def beforeEach(self):
         self.treap = Treap()
-        self.treap.insert("D")
-        self.treap.insert("F")
-        self.treap.insert("A")
-        self.treap.insert("E")
-        self.treap.insert("G")
 
     def afterEach(self):
         self.treap.healthy()
