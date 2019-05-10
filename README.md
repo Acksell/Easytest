@@ -44,7 +44,11 @@ Expect(["A","B",{}]).iterContains([str,str,dict])
 Expect({"a":["B","C"]}).dictContains({"a":[str,str,int,list,dict]})
 ```
 
-```
+Test for errors easily:
+
+```Python
+Expect(lambda _: 2+"2").toThrow(TypeError)
+Expect(lambda x,y,z: (x+y)/(z-z)).toThrowWith(1,1,1) # passes 1,1,1 to function
 ```
 
 There are an abundancy of available methods, for more documentation, see [Easytest.py](https://gits-15.sys.kth.se/grudat19/axelen-ovn7/blob/master/Easytest.py).
