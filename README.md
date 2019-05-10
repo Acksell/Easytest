@@ -23,6 +23,7 @@ class TreapTest(TestSuite):
         self.treap.healthy()
 
     def insertTest(self):
+        self.describe("Size increments correctly when inserting")
         self.treap.insert("B")
         self.expect(self.treap.size()).toEqual(1)
         self.treap.insert("B")
@@ -46,6 +47,9 @@ from easytest import Expect
 # for testing if data is unknown or unimportant. So these pass:
 Expect(["A","B",{}]).iterContains([str,str,dict])
 Expect({"a":["B","C"]}).dictContains({"a":[str,str,int,list,dict]})
+```
+
+```
 ```
 
 There are an abundancy of available methods, for more documentation, see [Easytest.py](https://gits-15.sys.kth.se/grudat19/axelen-ovn7/blob/master/Easytest.py).
