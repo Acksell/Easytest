@@ -36,6 +36,12 @@ class TestSuite:
         """Returns an Expectation object connected to this test suite"""
         return Expect(obj, self.messageHandler)
 
+    def describe(self, message):
+        """
+        Adds a descriptive explanation to the currently running test.
+        """
+        pass
+
 class Expect:
     """
     When you're writing tests, you often need to check that values meet
@@ -196,6 +202,13 @@ class Expect:
         """
         pass
 
+    def toThrow(self, exception=Exception):
+        """
+        Expects a function.
+        Passes if the function call throws the expected Exception.
+        If no specific exception provided, any exception is expected. 
+        """
+
 class _MessageHandler:
     def __init__(self):
         self.errors=[]
@@ -213,3 +226,8 @@ class _MessageHandler:
         """Displays all messages in queue and pops them."""
         pass
 
+def _errorParser(traceback):
+    """
+    Returns a list of parsed traceback.
+    """
+    pass
