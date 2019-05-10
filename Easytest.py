@@ -204,10 +204,18 @@ class Expect:
 
     def toThrow(self, exception=Exception):
         """
-        Expects a function.
+        Expects a function taking zero arguments.
         Passes if the function call throws the expected Exception.
         If no specific exception provided, any exception is expected. 
         """
+        pass
+
+    def toThrowWith(self, *args, **kwargs):
+        """
+        Expects a function.
+        Passes if the function throws an error with the provided arguments to .toThrowWith.
+        """
+        pass
 
 class _MessageHandler:
     def __init__(self):
