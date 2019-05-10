@@ -40,7 +40,7 @@ You can also easily perform typechecks of complex datastructures:
 from easytest import Expect
 # The below passes if object is a *subset* of expected. Useful
 # for testing if data is unknown or unimportant. So these pass:
-Expect(["A","B",{}]).iterContains([str,str,dict])
+Expect(["A","B",{}]).iterContains([str,"B",dict])
 Expect({"a":["B","C"]}).dictContains({"a":[str,str,int,list,dict]})
 ```
 
