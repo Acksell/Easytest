@@ -1,3 +1,7 @@
+
+from MessageHandler import _MessageHandler
+from exceptions import ExpectationFailure
+
 class Expect:
     """
     When you're writing tests, you often need to check that values meet
@@ -8,7 +12,7 @@ class Expect:
     object's content. If an expectation fails, a neat error message is 
     assured.
     """
-    def __init__(self, obj, _messageHandler=None, _negated=False):
+    def __init__(self, obj, _messageHandler=None, _negated=False, context=None):
         """Params:
             - object: the object to be inspected.
             - messageHandler: the MessageHandler to use.
@@ -20,6 +24,11 @@ class Expect:
                  methods that test for the opposite of normal
             _negated: if True, all methods test for the opposite of normal.
         """
+        self.context=context
+        if context is None:
+            self.context = "__main__"
+        self.obj = obj
+        self._negated = _negated
         self._messageHandler = _messageHandler
         if _messageHandler is None:
             self._messageHandler = _MessageHandler()
@@ -30,28 +39,48 @@ class Expect:
         A getter for not, returns an identical Expect object but with 
         methods that test for the opposite of normal
         """
-        return Expect(self.obj, self.messageHandler, _negated=True)
+        return Expect(self.obj, self._messageHandler, _negated=True)
     
     def toEqual(self, expected):
         """
         Expects any object.
         Passes if the object equals expected object.
         """
-        pass
+        # bitwise XOR creates correct truth table
+        passes = (self.obj == expected) ^ self._negated 
+        if not passes:
+            phrase="object {}to equal".format("not " if self._negated else "")
+            self._messageHandler.queueExpectation(expected, self.obj, phrase, context=self.context)
+            raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(expected, phrase, self.obj))
+        return passes
+
 
     def toBe(self, expected):
         """
         Expects any object.
         Passes if the object is (strictly the same) the expected object.
         """
-        pass
+        # bitwise XOR creates correct truth table
+        passes = (self.obj is expected) ^ self._negated 
+        if not passes:
+            phrase="object to {}be strictly equal to".format("not " if self._negated else "")
+            self._messageHandler.queueExpectation(expected, self.obj, phrase, context=self.context)
+            raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(expected, phrase, self.obj))
+        return passes
 
     def toHaveLength(self, length):
         """
         Expects an object implementing __len__.
         Passes if object's length is equal to expected length.
         """
-        pass
+        # bitwise XOR creates correct truth table
+        passes = (len(self.obj) == expected) ^ self._negated 
+        if not passes:
+            phrase="object {}to have length".format("not " if self._negated else "")
+            self._messageHandler.queueExpectation(expected, len(self.obj), phrase, context=self.context)
+            raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(expected, phrase, self.obj))
+        return passes
+
 
     def dictContains(self, expectedDict):
         """
@@ -107,13 +136,6 @@ class Expect:
         """
         Expects a numerical.
         Passes if object is less than or equal to numerical.
-        """
-        pass
-
-    def toBe(self, numerical):
-        """
-        Expects a numerical.
-        Passes if object is greater than numerical.
         """
         pass
 

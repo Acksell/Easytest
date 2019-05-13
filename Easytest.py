@@ -8,6 +8,9 @@ from collections import deque
 
 from ColorPrint import ColorPrint 
 from Expect import Expect
+from MessageHandler import _MessageHandler
+
+from exceptions import ExpectationFailure
 
 class TestSuite:
     """
@@ -20,7 +23,9 @@ class TestSuite:
         testnames = [func for func in dir(self) if callable(getattr(self, func)) and func.endswith("Test")]
         self._tests = [getattr(self, test) for test in testnames]
         self._messageHandler = _MessageHandler()
-        self.description = ""
+        self._status = dict()  # in case anyone wants this.
+        self._currently_running=__name__
+
     def beforeEach(self):
         """This function runs before each testcase. Feel free to override."""
         pass
@@ -39,59 +44,37 @@ class TestSuite:
         # can try: except: here to catch errors and display more verbose error messages.
 
         for test in self._tests:
-            self.beforeEach()
+            self._currently_running = test.__name__
+            self._messageHandler.setContext(self._currently_running)
+
             ColorPrint.warn(" RUNS ", end="", background=True)
-            ColorPrint.white(" {}".format(test.__name__), end="\r")
+            ColorPrint.white(" {}".format(self._currently_running), end="\r")
+            
+            self.beforeEach()
             try:
                 test()
             except Exception as error:
+                # ExpectationFailure is raised because Expect doesn't know if
+                # it is running in a testsuite.
+                if not isinstance(error, ExpectationFailure):
+                    self._messageHandler.queueError(error, context=self._currently_running)
+
                 ColorPrint.fail(" FAIL ",end="", background=True)
-                ColorPrint.white(" {}".format(test.__name__))
-                self._messageHandler.queueError(error, testname=test.__name__)
+                ColorPrint.white(" {}".format(self._currently_running))
+                self._status[test.__name__] = "failed"
             else:
                 ColorPrint.green(" PASS ",end="", background=True)
-                ColorPrint.green(" {}".format(test.__name__))
-                # self._messageHandler.queueMessage("PASSED: {}".format(test.__name__))
+                ColorPrint.green(" {}".format(self._currently_running))
+                self._status[test.__name__] = "passed"
             self.afterEach()
-        self._messageHandler.popMessages()
+        self._messageHandler.popAll()
 
     def expect(self, obj):
         """Returns an Expectation object connected to this test suite"""
-        return Expect(obj, self._messageHandler)
+        return Expect(obj, self._messageHandler, context=self._currently_running)
 
     def describe(self, message):
         """
         Adds a descriptive explanation to the currently running test.
         """
         pass
-
-class _MessageHandler:
-    def __init__(self):
-        self.errors=deque()
-        self.messages=deque()
-
-    def queueError(self, error, traceback=None, testname=None):
-        """Adds an appropriate error message to message queue."""
-        # print(error.value)
-        self.errors.append((type(error).__name__, error, testname))
-
-    def queueMessage(self,message):
-        """Adds a message to the message queue."""
-        self.messages.append(message)
-
-    def popMessages(self):
-        """Displays all messages in queue and pops them."""
-        # self.messages.popleft() can try this when looping
-        for message in self.messages:
-            ColorPrint.green(message)
-        self.messages.clear()
-        for errorType, errorMsg, testname in self.errors:
-            # print error type with hard background.
-            if testname: 
-                ColorPrint.fail(" ERROR ",background=1,end="")
-                ColorPrint.white(" In test {}:".format(testname))
-            ColorPrint.fail("\t{}:".format(errorType), end="", background=0)
-            # print error message with no background.
-            ColorPrint.fail(" {}".format(errorMsg), background=0)
-        self.errors.clear()
-

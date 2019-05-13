@@ -63,6 +63,7 @@ class ColorPrint:
 if __name__ == "__main__":
     ColorPrint.fail("ThisText fails: ", end="")
     ColorPrint.fail("HARD",background=1)
+   
     ColorPrint.green("ThisText passes ",end="")
     ColorPrint.green("HARD",background=1)
     
@@ -71,6 +72,7 @@ if __name__ == "__main__":
 
     ColorPrint.info("ThisText informs: ", end="")
     ColorPrint.info("HARD",background=1)
+
     ColorPrint.white("ThisText is white ",end="")
     ColorPrint.white("HARD",background=1)
 
