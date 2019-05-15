@@ -20,14 +20,15 @@ def issubset(received, expected):
                 #check that all items are instances of that class.
                 return all(map(lambda item: isinstance(item, expected[0]), received))
             else:
-                if len(received) > expected: return false
+                if len(received) > len(expected): 
+                    return False
                 passed = True
                 for i,item in enumerate(received):
                     passed = issubset(item, expected[i]) and passed
                     if not passed: break
                 return passed
         else:
-            return len(received) == 0
+            return len(received) == 0 # received not larger than expected if expected empty
     else: 
          # not instance of class, so it's a leaf, just check equality.
         return received == expected

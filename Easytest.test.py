@@ -60,6 +60,10 @@ class Tester(Easytest.TestSuite):
     def failSubset3Test(self):
         self.expect(["not empty"]).toBeSubset([])
 
+    def failSubset4Test(self):
+        self.expect([2,3,4,5]).toBeSubset([2,3,4])
+
+
 if __name__ == "__main__":
     tester=Tester()
     tester.run()
@@ -74,6 +78,7 @@ if __name__ == "__main__":
     assert tester._status["failSubset1Test"] == "failed"
     assert tester._status["failSubset2Test"] == "failed"
     assert tester._status["failSubset3Test"] == "failed"
-    # assert tester._status["passTest"] == pass
+    assert tester._status["failSubset4Test"] == "failed"
+    # assert tester._status["passTest"] == "passed"
     
     
