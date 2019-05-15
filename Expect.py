@@ -44,9 +44,14 @@ class Expect:
 
     def _fail(self, expected, received, phrase):
         self._messageHandler.queueExpectation(expected, received, phrase)
-        # the string passed here is just if calling Expect independently of a testsuite.
+        # the string passed here is just if calling Expect independently of in a testsuite.
         raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(expected, phrase, received))
     
+    def _handleExpectation(self, passes, phrase, expected, received=None):
+        if not passes: # throw ExpectationFailurs
+            self._fail(expected, self.obj if received is None else received, phrase) 
+        return passes
+
     def toEqual(self, expected):
         """
         Expects any object.
@@ -54,11 +59,8 @@ class Expect:
         """
         # bitwise XOR creates correct truth table
         passes = (self.obj == expected) ^ self._negated 
-        if not passes:
-            phrase="object {}to equal".format("not " if self._negated else "")
-            self._messageHandler.queueExpectation(expected, self.obj, phrase)
-            raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(expected, phrase, self.obj))
-        return passes
+        phrase="object to {}equal".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, expected)
 
 
     def toBe(self, expected):
@@ -68,11 +70,8 @@ class Expect:
         """
         # bitwise XOR creates correct truth table
         passes = (self.obj is expected) ^ self._negated 
-        if not passes:
-            phrase="object to {}be strictly equal to".format("not " if self._negated else "")
-            self._messageHandler.queueExpectation(expected, self.obj, phrase)
-            raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(expected, phrase, self.obj))
-        return passes
+        phrase="object to {}be strictly equal to".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, expected)
 
     def toHaveLength(self, length):
         """
@@ -81,10 +80,8 @@ class Expect:
         """
         # bitwise XOR creates correct truth table
         passes = (len(self.obj) == length) ^ self._negated 
-        if not passes:
-            phrase="object {}to have length".format("not " if self._negated else "")
-            self._fail(length, len(self.obj), phrase)
-        return passes
+        phrase="object to {}have length".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, length, received=len(self.obj))
 
     def toBeSubset(self, expectedObj):
         """
@@ -96,78 +93,80 @@ class Expect:
             Example: expect({"a":4}).dictContains({"a":int}) would pass.
         """
         passes = helpers.issubset(self.obj, expectedObj) ^ self._negated
-        if not passes:
-            phrase="object to {}be a *superset* of".format("not " if self._negated else "")
-            self._fail(expectedObj, self.obj, phrase)
-        return passes
-
-    def iterContains(self, expectedIter):
-        """
-        Expects an iterable.
-        Passes if iterable is a subset of the expected iterable.
-
-        You can pass classes if you don't want to be specific 
-        about the value that is allowed.
-            Example: expect(["This is","a list"]).iterContains([str,str,str]) would pass.
-        """
-        pass
+        phrase="object to {}be a *superset* of".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, expectedObj)
 
     def toBeInstanceOf(self, expectedClass):
         """
         Expects any object.
         Passes if object is instance of the expected class.
         """
-        pass
+        passes = (isinstance(self.obj, expectedClass)) ^ self._negated 
+        phrase="object to {}be an instance of".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, expectedClass)
 
     def toBeGreaterThan(self, numerical):
         """
         Expects a numerical.
         Passes if object is greater than numerical.
         """
-        pass
+        passes = (self.obj > numerical) ^ self._negated 
+        phrase="number to {}be greater than".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, numerical)
 
     def toBeGreaterThanOrEqual(self, numerical):
         """
         Expects a numerical.
         Passes if object is greater than or equal to numerical.
         """
-        pass
+        passes = (self.obj >= numerical) ^ self._negated 
+        phrase="number to {}be greater than or equal to".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, numerical)
 
     def toBeLessThan(self, numerical):
         """
         Expects a numerical.
         Passes if object is less than numerical.
         """
-        pass
+        passes = (self.obj < numerical) ^ self._negated 
+        phrase="number to {}be less than".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, numerical)
 
     def toBeLessThanOrEqual(self, numerical):
         """
         Expects a numerical.
         Passes if object is less than or equal to numerical.
         """
-        pass
-
-    def toBeNone(self, anyobject):
+        passes = (self.obj <= numerical) ^ self._negated 
+        phrase="number to {}be less than or equal to".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, numerical)
+        
+    def toBeNone(self):
         """
         Expects anything.
-        Passes if the object is not None.
+        Passes if the object is None.
         """
-        pass
+        passes = (self.obj is None) ^ self._negated 
+        phrase="object to {}be".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, None)
 
-    def toBeTruthy(self, obj):
+    def toBeTruthy(self):
         """
         Expects anything.
         Passes if the object is truthy.
         """
-        pass
+        passes = self.obj if not self._negated else not self.obj
+        phrase="object to {}be interpreted as".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, expected=True)
 
-    def toBeFalsy(self, obj):
+    def toBeFalsy(self):
         """
         Expects anything.
         Passes if the object is falsy.
         """
-        pass
-        
+        passes = self.obj if self._negated else not self.obj
+        phrase="object to {}be interpreted as".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, expected=False)        
 
     def toBeCloseTo(self, number):
         """
