@@ -45,7 +45,7 @@ class Expect:
     def _fail(self, expected, received, phrase):
         self._messageHandler.queueExpectation(expected, received, phrase)
         # the string passed here is just if calling Expect independently of in a testsuite.
-        raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(expected, phrase, received))
+        raise ExpectationFailure("\nExpected {}\n\t{}\nbut received\n\t{}".format(phrase, expected, received))
     
     def _handleExpectation(self, passes, phrase, expected, received=None):
         if not passes: # throw ExpectationFailurs
