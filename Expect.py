@@ -50,7 +50,7 @@ class Expect:
         passes = (self.obj == expected) ^ self._negated 
         if not passes:
             phrase="object {}to equal".format("not " if self._negated else "")
-            self._messageHandler.queueExpectation(expected, self.obj, phrase, context=self.context)
+            self._messageHandler.queueExpectation(expected, self.obj, phrase)
             raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(expected, phrase, self.obj))
         return passes
 
@@ -64,7 +64,7 @@ class Expect:
         passes = (self.obj is expected) ^ self._negated 
         if not passes:
             phrase="object to {}be strictly equal to".format("not " if self._negated else "")
-            self._messageHandler.queueExpectation(expected, self.obj, phrase, context=self.context)
+            self._messageHandler.queueExpectation(expected, self.obj, phrase)
             raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(expected, phrase, self.obj))
         return passes
 
@@ -74,11 +74,11 @@ class Expect:
         Passes if object's length is equal to expected length.
         """
         # bitwise XOR creates correct truth table
-        passes = (len(self.obj) == expected) ^ self._negated 
+        passes = (len(self.obj) == length) ^ self._negated 
         if not passes:
             phrase="object {}to have length".format("not " if self._negated else "")
-            self._messageHandler.queueExpectation(expected, len(self.obj), phrase, context=self.context)
-            raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(expected, phrase, self.obj))
+            self._messageHandler.queueExpectation(length, len(self.obj), phrase)
+            raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(length, phrase, self.obj))
         return passes
 
 

@@ -24,7 +24,7 @@ class TestSuite:
         self._tests = [getattr(self, test) for test in testnames]
         self._messageHandler = _MessageHandler()
         self._status = dict()  # in case anyone wants this.
-        self._currently_running=__name__
+        self._currently_running=None
 
     def beforeEach(self):
         """This function runs before each testcase. Feel free to override."""
@@ -57,7 +57,7 @@ class TestSuite:
                 # ExpectationFailure is raised because Expect doesn't know if
                 # it is running in a testsuite.
                 if not isinstance(error, ExpectationFailure):
-                    self._messageHandler.queueError(error, context=self._currently_running)
+                    self._messageHandler.queueError(error)
 
                 ColorPrint.fail(" FAIL ",end="", background=True)
                 ColorPrint.white(" {}".format(self._currently_running))

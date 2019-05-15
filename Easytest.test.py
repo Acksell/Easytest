@@ -10,15 +10,37 @@ class Tester(Easytest.TestSuite):
         time.sleep(1)
         1/0
 
-    def passExpectationTest(self):
+    def passEmptyTest(self):pass
+
+    def passToEqualTest(self):
         self.expect("Epic string").toEqual("Epic string")
 
-    def failExpectationTest(self):
+    def failNotToEqualTest(self):
         self.expect("Epic string").Not.toEqual("Epic string")
 
-    def pass2Test(self):pass
+    def passLengthTest(self):
+        self.expect([1,2,3,"4"]).toHaveLength(4)
 
+    def failLengthTest(self):
+        self.expect([1,2,3,"4"]).toHaveLength(3)
+
+    def failNotLengthTest(self):
+        self.expect([1,2,3,"4"]).Not.toHaveLength(4)
 
 if __name__ == "__main__":
     tester=Tester()
     tester.run()
+    
+    assert tester._status["passTest"] == "passed"
+    assert tester._status["passEmptyTest"] == "passed"
+    assert tester._status["failTest"] == "failed"
+    assert tester._status["passToEqualTest"] == "passed"
+    assert tester._status["failNotToEqualTest"] == "failed"
+    assert tester._status["passLengthTest"] == "passed"
+    assert tester._status["failNotLengthTest"] == "failed"
+    # assert tester._status["passTest"] == pass
+    # assert tester._status["passTest"] == pass
+    # assert tester._status["passTest"] == pass
+    # assert tester._status["passTest"] == pass
+    
+    
