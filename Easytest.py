@@ -5,6 +5,7 @@ library jest and the python test library unittest.
 """
 
 from collections import deque
+import sys, traceback
 
 from ColorPrint import ColorPrint 
 from Expect import Expect
@@ -56,8 +57,10 @@ class TestSuite:
             except Exception as error:
                 # ExpectationFailure is raised because Expect doesn't know if
                 # it is running in a testsuite.
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                tracebackFormatted = traceback.format_tb(exc_traceback)
                 if not isinstance(error, ExpectationFailure):
-                    self._messageHandler.queueError(error)
+                    self._messageHandler.queueError(error, tracebackFormatted)
 
                 ColorPrint.fail(" FAIL ",end="", background=True)
                 ColorPrint.white(" {}".format(self._currently_running))

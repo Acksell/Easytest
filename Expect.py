@@ -1,6 +1,7 @@
 
 from MessageHandler import _MessageHandler
 from exceptions import ExpectationFailure
+import helpers
 
 class Expect:
     """
@@ -40,6 +41,11 @@ class Expect:
         methods that test for the opposite of normal
         """
         return Expect(self.obj, self._messageHandler, _negated=True)
+
+    def _fail(self, expected, received, phrase):
+        self._messageHandler.queueExpectation(expected, received, phrase)
+        # the string passed here is just if calling Expect independently of a testsuite.
+        raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(expected, phrase, received))
     
     def toEqual(self, expected):
         """
@@ -77,21 +83,23 @@ class Expect:
         passes = (len(self.obj) == length) ^ self._negated 
         if not passes:
             phrase="object {}to have length".format("not " if self._negated else "")
-            self._messageHandler.queueExpectation(length, len(self.obj), phrase)
-            raise ExpectationFailure("\nExpected\n\t{}\n{}\n\t{}".format(length, phrase, self.obj))
+            self._fail(length, len(self.obj), phrase)
         return passes
 
-
-    def dictContains(self, expectedDict):
+    def toBeSubset(self, expectedObj):
         """
-        Expects a dictionary.
-        Passes if dictionary is a subset of expected dictionary.
+        Expects an object.
+        Passes if object is a subset of expected object.
         
         You can pass classes if you don't want to be specific 
         about the value that is allowed.
             Example: expect({"a":4}).dictContains({"a":int}) would pass.
         """
-        pass
+        passes = helpers.issubset(self.obj, expectedObj) ^ self._negated
+        if not passes:
+            phrase="object to {}be a *superset* of".format("not " if self._negated else "")
+            self._fail(expectedObj, self.obj, phrase)
+        return passes
 
     def iterContains(self, expectedIter):
         """

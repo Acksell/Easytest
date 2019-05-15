@@ -27,7 +27,7 @@ class _MessageHandler:
         # get correct queue
         context = self.contexts.get(self.context, None)
         if context:
-            context["errors"].append((type(error).__name__, error))
+            context["errors"].append((type(error).__name__, error, traceback))
         else:
             raise KeyError("Could not find context {}".format(self.context))
 
@@ -56,11 +56,13 @@ class _MessageHandler:
         context = self.contexts.get(contextName, None)
         if context:
             while context["errors"]:
-                errorType, errorMsg = context["errors"].popleft()
+                errorType, errorMsg, traceback = context["errors"].popleft()
                 # print error type with hard background.
                 ColorPrint.fail("\t{}:".format(errorType), end="")
                 # print error message with no background.
                 ColorPrint.fail(" {}".format(errorMsg))
+                for line in traceback:
+                    ColorPrint.fail("  {}".format(line))
         else:
             raise KeyError("Could not find context {}".format(contextName))
 
