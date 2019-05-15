@@ -45,9 +45,9 @@ class _MessageHandler:
             while context["expectations"]:
                 expected, received, phrase = context["expectations"].popleft()
                 ColorPrint.white("\tExpected {}:".format(phrase))
-                ColorPrint.green("\t\t{}".format(expected))
+                ColorPrint.green("\t\t{}".format(repr(expected)))
                 ColorPrint.white("\tBut received:")
-                ColorPrint.fail("\t\t{}".format(received))
+                ColorPrint.fail("\t\t{}".format(repr(received)))
         else:
             raise KeyError("Could not find context {}".format(contextName))
 
