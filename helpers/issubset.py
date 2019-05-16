@@ -16,7 +16,8 @@ def issubset(received, expected):
         return passed # all keys returned true
     elif isinstance(received, list): # check subset for list
         if expected:
-            if isinstance(expected[0], type): # is a list of class. e.g. [int]
+            # is a list of class. e.g. [int]
+            if isinstance(expected[0], type) and len(expected)==1:
                 #check that all items are instances of that class.
                 return all(map(lambda item: isinstance(item, expected[0]), received))
             else:

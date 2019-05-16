@@ -30,7 +30,7 @@ class Tester(Easytest.TestSuite):
         self.expect([1,2,3,"4"]).toHaveLength(3)
 
     def passSubsetTest(self):
-        self.expect(["test"]).toBeSubset([str])
+        self.expect(["test","ing"]).toBeSubset([str])
         self.expect({"test":3}).toBeSubset({"test":int})
         self.expect({"test":[4,5,1,2,2]}).toBeSubset({"test":[int]})
         self.expect({"test":[1,2,3,4,5]}).toBeSubset({"test":[1,2,3,4,5,6,7,8]})
@@ -62,7 +62,6 @@ class Tester(Easytest.TestSuite):
 
     def failSubset2Test(self):
         self.expect({"test":[4,5,1,2,2,"9"]}).toBeSubset({"test":[int]})
-    
 
     def failSubset3Test(self):
         self.expect(["not empty"]).toBeSubset([])
@@ -156,6 +155,12 @@ class Tester(Easytest.TestSuite):
     def failThrowWithTest(self):
         self.expect(str).toThrowWith(42)
 
+    def passCloseToTest(self):
+        self.expect(3.14).toBeCloseTo(3.141592)
+
+    def failCloseToTest(self):
+        self.expect(3).toBeCloseTo(3.141592)
+
 
 if __name__ == "__main__":
     tester=Tester()
@@ -193,6 +198,8 @@ if __name__ == "__main__":
     assert tester._status["failThrowTest"] == "failed"
     assert tester._status["passThrowWithTest"] == "passed"
     assert tester._status["failThrowWithTest"] == "failed"
+    assert tester._status["passCloseToTest"] == "passed"
+    assert tester._status["failCloseToTest"] == "failed"
     # assert tester._status["passInstanceOf"] == "passed"
     
     

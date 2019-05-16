@@ -8,7 +8,7 @@ import helpers
 class Expect:
     """
     When you're writing tests, you often need to check that values meet
-    certain conditions. Expect gives access to a number of "matchers"
+    certain conditions. Expect gives access to a number of methods
     that let you validate different things.
 
     Each public method represents different expectations of the 
@@ -64,7 +64,6 @@ class Expect:
         phrase="object to {}equal".format("not " if self._negated else "")
         return self._handleExpectation(passes, phrase, expected, self.obj)
 
-
     def toBe(self, expected):
         """
         Expects any object.
@@ -88,11 +87,17 @@ class Expect:
     def toBeSubset(self, expectedObj):
         """
         Expects an object.
-        Passes if object is a subset of expected object.
-        
+        Passes if `obj` is a subset of the `expected` object.
+        Note that lists are sensitive to order, so `[1,2,3]` is
+        not a subset of `[2,3,1]`.
+
         You can pass classes if you don't want to be specific 
-        about the value that is allowed.
-            Example: expect({"a":4}).dictContains({"a":int}) would pass.
+        about the value that is allowed. Example: 
+          `Expect({"a":4}).toBeSubset({"a":int})` would pass.
+
+        When faced with a list such as `[class]`, a list is a subset
+        if all items are an instance of the class. For example, this passes:
+          `Expect([1,2,3,4,5]).toBeSubset([int])`
         """
         passes = helpers.issubset(self.obj, expectedObj) ^ self._negated
         phrase="object to {}be a *superset* of".format("not " if self._negated else "")
@@ -166,13 +171,15 @@ class Expect:
         phrase="object to {}be interpreted as".format("not " if self._negated else "")
         return self._handleExpectation(passes, phrase, expected=False, received=self.obj)        
 
-    def toBeCloseTo(self, number):
+    def toBeCloseTo(self, number, numDigits=2):
         """
         Expects a numeric type.
         Passes if object is sufficiently close to 
         number when accounting for floating point errors.
         """
-        pass
+        passes = (abs(self.obj - number) < 10**(-numDigits)/2) ^ self._negated
+        phrase = "number to {}be accurate up to {} decimals of".format("not " if self._negated else "", numDigits)
+        return self._handleExpectation(passes, phrase, number, self.obj)
 
     def toMatch(self, regex, flags=0):
         """
