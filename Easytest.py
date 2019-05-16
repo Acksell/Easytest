@@ -4,8 +4,8 @@ A small test module inspired by the javascript test
 library jest and the python test library unittest.
 """
 
-from collections import deque
 import sys, traceback
+import time
 
 from ColorPrint import ColorPrint 
 from Expect import Expect
@@ -25,7 +25,8 @@ class TestSuite:
         self._tests = [getattr(self, test) for test in testnames]
         self._messageHandler = _MessageHandler()
         self._status = dict()  # in case anyone wants this.
-        self._currently_running=None
+        self._currently_running = None
+        self._run_time = None
 
     def beforeEach(self):
         """This function runs before each testcase. Feel free to override."""
@@ -43,7 +44,7 @@ class TestSuite:
         If a test fails, a helpful error message is displayed.
         """
         # can try: except: here to catch errors and display more verbose error messages.
-
+        _start_time = time.time()
         for test in self._tests:
             self._currently_running = test.__name__
             self._messageHandler.setContext(self._currently_running)
@@ -70,7 +71,10 @@ class TestSuite:
                 ColorPrint.green(" {}".format(self._currently_running))
                 self._status[test.__name__] = "passed"
             self.afterEach()
+        self._run_time = round(time.time() - _start_time, 2)
         self._messageHandler.popAll()
+        print()
+        ColorPrint.info("Ran all tests in {} seconds".format(self._run_time))
 
     def expect(self, obj):
         """Returns an Expectation object connected to this test suite"""
