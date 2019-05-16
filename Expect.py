@@ -153,7 +153,7 @@ class Expect:
         Expects anything.
         Passes if the object is truthy.
         """
-        passes = self.obj if not self._negated else not self.obj
+        passes = (not not self.obj) ^ self._negated
         phrase="object to {}be interpreted as".format("not " if self._negated else "")
         return self._handleExpectation(passes, phrase, expected=True)
 
@@ -162,7 +162,7 @@ class Expect:
         Expects anything.
         Passes if the object is falsy.
         """
-        passes = self.obj if self._negated else not self.obj
+        passes = (not self.obj) ^ self._negated
         phrase="object to {}be interpreted as".format("not " if self._negated else "")
         return self._handleExpectation(passes, phrase, expected=False)        
 
@@ -185,10 +185,12 @@ class Expect:
 
     def toBeWithinRange(self, low, high):
         """
-        Expects an object compatible with < and <= comparisons.
-        Passes if object between low and high.
+        Expects an object compatible with <= and < comparisons.
+        Passes if object in interval [low,high).
         """
-        pass
+        passes = (low <= self.obj < high) ^ self._negated
+        phrase="string to {}be in the interval".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, expected="[{}, {})".format(low,high))
 
     def toThrow(self, exception=Exception):
         """

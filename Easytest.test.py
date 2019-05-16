@@ -125,6 +125,19 @@ class Tester(Easytest.TestSuite):
         self.expect("programmeringsparadigm").toMatch(regex)
         self.expect("ducksgoquack").Not.toMatch(regex)
 
+    def passWithinRangeTest(self):
+        self.expect(4).toBeWithinRange(0,5)
+        self.expect(4).toBeWithinRange(4,5)
+        self.expect(4).Not.toBeWithinRange(5,0)
+        self.expect(4).Not.toBeWithinRange(10,15)
+
+    def failWithinRangeTest(self):
+        self.expect(43.2).toBeWithinRange(43.200001,44)
+
+    def failWithinRange2Test(self):
+        self.expect(50).toBeWithinRange(0,50) # not closed higher end.
+
+
 if __name__ == "__main__":
     tester=Tester()
     tester.run()
@@ -154,6 +167,9 @@ if __name__ == "__main__":
     assert tester._status["failTruthyTest"] == "failed"
     assert tester._status["failFalsyTest"] == "failed"
     assert tester._status["passRegexTest"] == "passed"
+    assert tester._status["passWithinRangeTest"] == "passed"
+    assert tester._status["failWithinRangeTest"] == "failed"
+    assert tester._status["failWithinRange2Test"] == "failed"
     # assert tester._status["passInstanceOf"] == "passed"
     
     
