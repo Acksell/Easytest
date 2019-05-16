@@ -46,9 +46,9 @@ class ColorPrint:
         ColorPrint.print(message, background=background, foreground=foreground, end=end)
 
     @staticmethod
-    def info(message, end = '\n', background=False, foreground=6):
+    def info(message, end = '\n', background=False, foreground=45):
         if background: 
-            background=6
+            background=45
             foreground=0
         ColorPrint.print(message, background=background, foreground=foreground, end=end)
         

@@ -22,6 +22,9 @@ class _MessageHandler:
             self.contexts[context]["expectations"] = deque()
         self.context = context
 
+    def setDescription(self, description):
+        self.contexts[self.context]["description"] = description
+
     def queueError(self, error, traceback=None):
         """Adds an appropriate error message to message queue."""
         # get correct queue
@@ -71,6 +74,8 @@ class _MessageHandler:
             currContext=self.contexts[context]
             if currContext["expectations"] or currContext["errors"]:
                 ColorPrint.white(" In test {}:".format(context))
+                if currContext.get("description"):
+                    ColorPrint.info("  {}".format(currContext["description"]))
             if currContext["expectations"]:
                 ColorPrint.white("  ",end="")
                 ColorPrint.fail(" EXPECTATION ",background=True)

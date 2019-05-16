@@ -76,8 +76,10 @@ class TestSuite:
         """Returns an Expectation object connected to this test suite"""
         return Expect(obj, self._messageHandler, context=self._currently_running)
 
-    def describe(self, message):
+    def it(self, message):
         """
         Adds a descriptive explanation to the currently running test.
+        Example: self.it("should return False for empty case")
         """
-        pass
+        capitalizedMessage="{}{}".format(message[0].upper(), message[1:])
+        self._messageHandler.setDescription(capitalizedMessage)

@@ -7,6 +7,7 @@ class Tester(Easytest.TestSuite):
         1/1
 
     def failTest(self):
+        self.it("should print error")
         time.sleep(1)
         1/0
 
@@ -135,6 +136,7 @@ class Tester(Easytest.TestSuite):
         self.expect(43.2).toBeWithinRange(43.200001,44)
 
     def failWithinRange2Test(self):
+        self.it("should not count endpoint as within interval (open ended).")
         self.expect(50).toBeWithinRange(0,50) # not closed higher end.
 
     def passThrowTest(self):
