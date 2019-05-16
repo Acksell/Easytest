@@ -22,7 +22,7 @@ class ColorPrint:
         elif background:
             prepend='\x1b[48;5;{}m'.format(background)
         ansi_code = '{}\x1b[38;5;{}m'.format(prepend, foreground)
-        sys.stderr.write(ansi_code + message + '\x1b[0m' + end)
+        sys.stdout.write(ansi_code + message + '\x1b[0m' + end)
 
     @staticmethod
     def fail(message, end = '\n', background=False, foreground=9):

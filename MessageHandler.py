@@ -4,14 +4,17 @@ from ColorPrint import ColorPrint
 
 class _MessageHandler:
     def __init__(self):
-        # self.errors = deque()
-        # self.expectations = deque()
         self.context = None
         # ordered dict because when displaying messages the contexts 
         # should be the same order every time you run the program
         self.contexts = OrderedDict()
         # None is default global context.
         self.contexts[None] = dict()
+        # We will use deques but the program should 
+        # never queue more than one error/expectation.
+        # It ends up being an easier way of doing it though.
+        # Also, it might be the case in some edge cases that 
+        # there are more items than one.
         self.contexts[None]["errors"] = deque()
         self.contexts[None]["expectations"] = deque()
 
