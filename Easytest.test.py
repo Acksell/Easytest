@@ -18,6 +18,10 @@ class Tester(Easytest.TestSuite):
     def failNotToEqualTest(self):
         self.expect("Epic string").Not.toEqual("Epic string")
 
+    def passNotTest(self):
+        self.expect("test").Not.Not.toEqual("test")
+        self.expect("test").Not.Not.Not.toEqual("lol")
+
     def passLengthTest(self):
         self.expect([1,2,3,"4"]).toHaveLength(4)
 
@@ -124,6 +128,7 @@ if __name__ == "__main__":
     assert tester._status["failTest"] == "failed"
     assert tester._status["passToEqualTest"] == "passed"
     assert tester._status["failNotToEqualTest"] == "failed"
+    assert tester._status["passNotTest"] == "passed"
     assert tester._status["passLengthTest"] == "passed"
     assert tester._status["passSubsetTest"] == "passed"
     assert tester._status["failSubset1Test"] == "failed"

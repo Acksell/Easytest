@@ -40,7 +40,7 @@ class Expect:
         A getter for not, returns an identical Expect object but with 
         methods that test for the opposite of normal
         """
-        return Expect(self.obj, self._messageHandler, _negated=True)
+        return Expect(self.obj, self._messageHandler, _negated=not self._negated)
 
     def _fail(self, expected, received, phrase):
         self._messageHandler.queueExpectation(expected, received, phrase)
@@ -114,15 +114,6 @@ class Expect:
         phrase="number to {}be greater than".format("not " if self._negated else "")
         return self._handleExpectation(passes, phrase, numerical)
 
-    def toBeGreaterThanOrEqual(self, numerical):
-        """
-        Expects a numerical.
-        Passes if object is greater than or equal to numerical.
-        """
-        passes = (self.obj >= numerical) ^ self._negated 
-        phrase="number to {}be greater than or equal to".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, numerical)
-
     def toBeLessThan(self, numerical):
         """
         Expects a numerical.
@@ -131,15 +122,20 @@ class Expect:
         passes = (self.obj < numerical) ^ self._negated 
         phrase="number to {}be less than".format("not " if self._negated else "")
         return self._handleExpectation(passes, phrase, numerical)
+    
+    def toBeGreaterThanOrEqual(self, numerical):
+        """
+        Expects a numerical.
+        Passes if object is greater than or equal to numerical.
+        """
+        return self.Not.toBeLessThan(numerical)
 
     def toBeLessThanOrEqual(self, numerical):
         """
         Expects a numerical.
         Passes if object is less than or equal to numerical.
         """
-        passes = (self.obj <= numerical) ^ self._negated 
-        phrase="number to {}be less than or equal to".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, numerical)
+        return self.Not.toBeGreaterThan(numerical)
         
     def toBeNone(self):
         """
