@@ -137,6 +137,23 @@ class Tester(Easytest.TestSuite):
     def failWithinRange2Test(self):
         self.expect(50).toBeWithinRange(0,50) # not closed higher end.
 
+    def passThrowTest(self):
+        self.expect(lambda: 1/0).toThrow()
+        self.expect(lambda: 1/0).toThrow(ZeroDivisionError)
+        self.expect(lambda: 1+"1").toThrow(TypeError)
+    
+    def failThrowTest(self):
+        self.expect(lambda: 1/1).toThrow()
+
+    def passThrowWithTest(self):
+        from math import log, sqrt
+        self.expect(log).toThrowWith(0)
+        self.expect(sqrt).toThrowWith(-1)
+        self.expect(lambda x,y: 1/(x+y)).toThrowWith(1,-1)
+    
+    def failThrowWithTest(self):
+        self.expect(str).toThrowWith(42)
+
 
 if __name__ == "__main__":
     tester=Tester()
@@ -170,6 +187,10 @@ if __name__ == "__main__":
     assert tester._status["passWithinRangeTest"] == "passed"
     assert tester._status["failWithinRangeTest"] == "failed"
     assert tester._status["failWithinRange2Test"] == "failed"
+    assert tester._status["passThrowTest"] == "passed"
+    assert tester._status["failThrowTest"] == "failed"
+    assert tester._status["passThrowWithTest"] == "passed"
+    assert tester._status["failThrowWithTest"] == "failed"
     # assert tester._status["passInstanceOf"] == "passed"
     
     

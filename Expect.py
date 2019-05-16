@@ -49,9 +49,9 @@ class Expect:
         # the string passed here is just if calling Expect independently of in a testsuite.
         raise ExpectationFailure("\nExpected {}\n\t{}\nbut received\n\t{}".format(phrase, expected, received))
     
-    def _handleExpectation(self, passes, phrase, expected, received=None):
+    def _handleExpectation(self, passes, phrase, expected, received):
         if not passes: # throw ExpectationFailurs
-            self._fail(expected, self.obj if received is None else received, phrase) 
+            self._fail(expected, received, phrase) 
         return passes
 
     def toEqual(self, expected):
@@ -62,7 +62,7 @@ class Expect:
         # bitwise XOR creates correct truth table
         passes = (self.obj == expected) ^ self._negated 
         phrase="object to {}equal".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, expected)
+        return self._handleExpectation(passes, phrase, expected, self.obj)
 
 
     def toBe(self, expected):
@@ -73,7 +73,7 @@ class Expect:
         # bitwise XOR creates correct truth table
         passes = (self.obj is expected) ^ self._negated 
         phrase="object to {}be strictly equal to".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, expected)
+        return self._handleExpectation(passes, phrase, expected, self.obj)
 
     def toHaveLength(self, length):
         """
@@ -96,7 +96,7 @@ class Expect:
         """
         passes = helpers.issubset(self.obj, expectedObj) ^ self._negated
         phrase="object to {}be a *superset* of".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, expectedObj)
+        return self._handleExpectation(passes, phrase, expectedObj, self.obj)
 
     def toBeInstanceOf(self, expectedClass):
         """
@@ -105,7 +105,7 @@ class Expect:
         """
         passes = (isinstance(self.obj, expectedClass)) ^ self._negated 
         phrase="object to {}be an instance of".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, expectedClass)
+        return self._handleExpectation(passes, phrase, expectedClass, self.obj)
 
     def toBeGreaterThan(self, numerical):
         """
@@ -114,7 +114,7 @@ class Expect:
         """
         passes = (self.obj > numerical) ^ self._negated 
         phrase="number to {}be greater than".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, numerical)
+        return self._handleExpectation(passes, phrase, numerical, self.obj)
 
     def toBeLessThan(self, numerical):
         """
@@ -123,7 +123,7 @@ class Expect:
         """
         passes = (self.obj < numerical) ^ self._negated 
         phrase="number to {}be less than".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, numerical)
+        return self._handleExpectation(passes, phrase, numerical, self.obj)
     
     def toBeGreaterThanOrEqual(self, numerical):
         """
@@ -146,7 +146,7 @@ class Expect:
         """
         passes = (self.obj is None) ^ self._negated 
         phrase="object to {}be".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, None)
+        return self._handleExpectation(passes, phrase, None, self.obj)
 
     def toBeTruthy(self):
         """
@@ -155,7 +155,7 @@ class Expect:
         """
         passes = (not not self.obj) ^ self._negated
         phrase="object to {}be interpreted as".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, expected=True)
+        return self._handleExpectation(passes, phrase, expected=True, received=self.obj)
 
     def toBeFalsy(self):
         """
@@ -164,7 +164,7 @@ class Expect:
         """
         passes = (not self.obj) ^ self._negated
         phrase="object to {}be interpreted as".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, expected=False)        
+        return self._handleExpectation(passes, phrase, expected=False, received=self.obj)        
 
     def toBeCloseTo(self, number):
         """
@@ -181,7 +181,7 @@ class Expect:
         """
         passes = (not not re.search(regex, self.obj, flags=flags)) ^ self._negated
         phrase="string to {}be matched by the regex".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, regex)
+        return self._handleExpectation(passes, phrase, regex, self.obj)
 
     def toBeWithinRange(self, low, high):
         """
@@ -190,7 +190,8 @@ class Expect:
         """
         passes = (low <= self.obj < high) ^ self._negated
         phrase="string to {}be in the interval".format("not " if self._negated else "")
-        return self._handleExpectation(passes, phrase, expected="[{}, {})".format(low,high))
+        return self._handleExpectation(passes, phrase, 
+                    expected="[{}, {})".format(low,high), received=self.obj)
 
     def toThrow(self, exception=Exception):
         """
@@ -198,11 +199,32 @@ class Expect:
         Passes if the function call throws the expected Exception.
         If no specific exception provided, any exception is expected. 
         """
-        pass
+        result=None
+        try:
+            result = self.obj()
+        except Exception as err:
+            result=err
+            passes = isinstance(err, exception)
+        else:
+            passes=False
+        passes ^= self._negated
+        phrase="function {} to {}throw the exception".format(self.obj.__name__, "not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, exception, received=result)
+
 
     def toThrowWith(self, *args, **kwargs):
         """
         Expects a function.
-        Passes if the function throws an error with the provided arguments to .toThrowWith.
+        Passes if the function throws an Exception with the provided arguments.
         """
-        pass
+        result=None
+        try:
+            result=self.obj(*args, **kwargs)
+        except Exception as err:
+            result=err
+            passes = True
+        else:
+            passes=False
+        passes ^= self._negated
+        phrase="function {} to {}throw an exception".format(self.obj, "not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, Exception, received=result)
