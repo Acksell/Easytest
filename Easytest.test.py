@@ -119,6 +119,12 @@ class Tester(Easytest.TestSuite):
     def failFalsyTest(self):
         self.expect("notempty").toBeFalsy()
 
+    def passRegexTest(self):
+        inner='.*'.join("progp")
+        regex=r'^(.*{}.*)$'.format(inner)
+        self.expect("programmeringsparadigm").toMatch(regex)
+        self.expect("ducksgoquack").Not.toMatch(regex)
+
 if __name__ == "__main__":
     tester=Tester()
     tester.run()
@@ -147,8 +153,7 @@ if __name__ == "__main__":
     assert tester._status["passTruthyTest"] == "passed"
     assert tester._status["failTruthyTest"] == "failed"
     assert tester._status["failFalsyTest"] == "failed"
-    
-    
+    assert tester._status["passRegexTest"] == "passed"
     # assert tester._status["passInstanceOf"] == "passed"
     
     

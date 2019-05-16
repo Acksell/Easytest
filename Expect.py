@@ -1,4 +1,6 @@
 
+import re
+
 from MessageHandler import _MessageHandler
 from exceptions import ExpectationFailure
 import helpers
@@ -172,12 +174,14 @@ class Expect:
         """
         pass
 
-    def toMatch(self, regex):
+    def toMatch(self, regex, flags=0):
         """
         Expects a string.
-        Passes if the string matches the regular expression.
+        Passes if the string matches (re.search) the regular expression.
         """
-        pass
+        passes = (not not re.search(regex, self.obj, flags=flags)) ^ self._negated
+        phrase="string to {}be matched by the regex".format("not " if self._negated else "")
+        return self._handleExpectation(passes, phrase, regex)
 
     def toBeWithinRange(self, low, high):
         """
