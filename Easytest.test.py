@@ -163,7 +163,8 @@ class Tester(Easytest.TestSuite):
 
 
 if __name__ == "__main__":
-    tester=Tester()
+    # exit_gracefully=True in order to test the error logging output without non-zero exit code
+    tester=Tester(exit_gracefully=True) 
     tester.run()
     
     assert tester._status["passTest"] == "passed"
