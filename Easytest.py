@@ -75,6 +75,9 @@ class TestSuite:
         self._messageHandler.popAll()
         print()
         ColorPrint.info("Ran all tests in {} seconds".format(self._run_time))
+        if any(map(lambda key: self._status[key] == "failed", self._status)): 
+            sys.exit(1)
+
 
     def expect(self, obj):
         """Returns an Expectation object connected to this test suite"""
