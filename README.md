@@ -1,4 +1,7 @@
+
 # Easytest
+![](https://github.com/Acksell/Easytest/workflows/Tests/badge.svg?branch=readmebadge)
+
 ## Introduction
 
 A small test module inspired by the javascript test
