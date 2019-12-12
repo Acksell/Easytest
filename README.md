@@ -1,4 +1,7 @@
+
 # Easytest
+![](https://github.com/Acksell/Easytest/workflows/Easytest/badge.svg)
+
 ## Introduction
 
 A small test module inspired by the javascript test
