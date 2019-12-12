@@ -1,6 +1,6 @@
 
 # Easytest
-![](https://github.com/Acksell/Easytest/workflows/Tests/badge.svg?branch=readmebadge)
+![](https://github.com/Acksell/Easytest/workflows/Easytest/badge.svg?branch=readmebadge)
 
 ## Introduction
 
